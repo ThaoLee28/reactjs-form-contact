@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { Form, Field, FormSpy } from "react-final-form";
 import { ReactComponent as SvgDropdown } from './svg/dropdown.svg';
+import { ReactComponent as SvgAttract } from './svg/attract.svg';
 import RadioGroup from './RadioGroup';
-
 class FormContact extends Component {
   constructor(props){
     super(props);
     this.state={
       data:[],
-      value:''
+      value:'',
+      selectedFile: null,
     };
   }
   fetchData = () => {
@@ -17,7 +18,7 @@ class FormContact extends Component {
       "name": "Tony",
       "email": "tony@gmail.com",
       "phone": "0987654321",
-      "location": "USA",
+      "location": {name: "USA", id: "1"},
       "budget": "not define",
       "about": "Contact",
     }), 500))
@@ -33,24 +34,13 @@ class FormContact extends Component {
   componentDidMount() {
     this.fetchData();
   }
+  handleselectedFile = e => {
+    this.setState({
+      selectedFile: e.target.files[0],
+    })
+  }
   submit = values => {
-    const data = new Promise(resolve => setTimeout(() => resolve ({
-      companyName: values.companyName,
-      name: values.name,
-      email: values.email,
-      phone: values.phone,
-      location: values.location.name,
-      budget: values.budget,
-      about: values.about,
-    }), 500))
-    data.then(
-      results => {
-        console.log(results)
-        this.setState({
-          data: results
-        })
-      }
-    )
+    console.log(values)
   }
   validate = values => {
     const errors = {};
@@ -60,12 +50,14 @@ class FormContact extends Component {
     return errors;
   }
   render() {
+    console.log(this.state.selectedFile)
     return(
       <div className="container mx-auto mt-5 shadow-md p-5" style={{ maxWidth: 900 }}>
         <Form
           onSubmit={this.submit}
           validate={this.validate}
           initialValues={{...this.state.data}}
+          onChange={this.handleChangeForm}
           render={ ({ handleSubmit, form , submitting}) => (
             <form onSubmit={handleSubmit}>
               <FormSpy
@@ -162,6 +154,7 @@ class FormContact extends Component {
                         { name: 'Orther', id: 4 },
                       ]}
                       onChange={input.onChange}
+                      optionItem={input.value.name}
                     />
                   )}
                 </Field>
@@ -180,15 +173,30 @@ class FormContact extends Component {
                   <option value="up to $100,000">Up to $100,000</option>
                   <option value="more than $100,000">More than $100,000</option>
                 </Field>
-                <SvgDropdown className="absolute pin-r" style={{ top: `50%`, transform: `translateX(-50%)`  }}/>
+                <SvgDropdown className="absolute pin-r" style={{ top: `50%`, transform: `translateX(-50%)` }}/>
               </div>
-              <div className="my-3 mx-5">
+              <div className="relative my-3 mx-5">
                 <label className="block mb-2">Tell us about your project</label>
                 <Field
                   name="about"
                   component="textarea"
                   className="block border border-solid bg-grey-lighter w-full focus:outline-none px-4 py-3"
                   rows={5}
+                >
+                </Field>
+
+                <label htmlFor="upload">
+                  <SvgAttract 
+                    className="absolute pin-t pin-r mr-2" style={{ top: `25%`, transform: `translateX(-25%)` }}
+                  /> 
+                </label>
+                <Field 
+                  name="upload_file"
+                  component="input"
+                  type="file"
+                  id="upload"
+                  className="hidden"
+                  onChange={this.handleselectedFile}
                 >
                 </Field>
               </div>

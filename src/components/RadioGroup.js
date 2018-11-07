@@ -27,21 +27,22 @@ class RadioGroup extends Component {
     return(
       <div className="flex flex-row cursor-pointer">
         {(this.state.items || []).map((item) => (
-          <div 
+          <button 
             key={item.id} 
             className={`flex-inline flex justify-center items-center w-full py-2 focus:outline-none hover:text-red
               ${this.state.options.id === item.id
-                ? 'border-red border-2 shadow-md'
+                ? 'border-red border-2 shadow'
                 : 'border boder-solid'
               }`}
             onClick={() => this.optionItem(item)}
+            type="button"
           >
             <span 
               className={`${this.state.options.id === item.id ? 'text-red' : '' }`}
             >
               {item.name}
             </span>
-          </div>                               
+          </button>                               
         ))}
       </div>
     );
