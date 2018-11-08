@@ -3,6 +3,7 @@ import { Form, Field, FormSpy } from "react-final-form";
 import { ReactComponent as SvgDropdown } from './svg/dropdown.svg';
 import { ReactComponent as SvgAttract } from './svg/attract.svg';
 import RadioGroup from './RadioGroup';
+import axios from 'axios';
 class FormContact extends Component {
   constructor(props){
     super(props);
@@ -38,6 +39,18 @@ class FormContact extends Component {
     this.setState({
       selectedFile: e.target.files[0],
     })
+  }
+  fileUploadHandle = () => {
+    const fd = new FormData()
+    fd.append('file', this.state.selectedFile, this.state.selectedFile.name);
+    axios.post('http://localhost:3000/upload', fd, {
+      onUploadProgress: progressEvent => {
+        console.log('UpLoad Progress: ' + Math.round(progressEvent.loaded / progressEvent.total) * 100 + '%') 
+      }
+    })
+      .then(res=>{
+        console.log(res);
+      });
   }
   submit = values => {
     console.log(values)
@@ -217,11 +230,19 @@ class FormContact extends Component {
                   </Field>
                 </div>
               </div>
-              {/* <ul className="list-reset">
-                <li>
-                  <span>{this.state.selectedFile[0].name}</span>
-                </li>
-              </ul> */}
+              {/* <button onClick={this.fileUploadHandle} type="button">Upload</button> */}
+              <div 
+                className={`${(this.state.selectedFile != null ? 'row mx-2 bg-grey-lighter mb-5 p-5' : 'none')}`}
+              >
+                <ul className="list-reset">
+                  <li>
+                    <div className="flex items-center">
+                      <div className="flex-auto">{`${(this.state.selectedFile) != null ? this.state.selectedFile.name : '' }`}</div>
+                      <div className="flex-none">{`${(this.state.selectedFile) != null ? (this.state.selectedFile.size)/1000 + ' KB' : '' }`}</div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
               <div className="row mx-2 flex justify-center item-center">
                 <button 
                   type="submit" 
