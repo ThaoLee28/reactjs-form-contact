@@ -5,16 +5,20 @@ import { ReactComponent as SvgAttract } from './svg/attract.svg';
 import RadioGroup from './RadioGroup';
 import axios from 'axios';
 class FormContact extends Component {
+  static defaultProps = {
+    selectedFile: null,
+  };
+
   constructor(props){
     super(props);
     this.state={
       data:[],
-      value:'',
-      selectedFile: null,
+      selectedFile: this.props.selectedFile || [],
     };
   }
+
   fetchData = () => {
-    const fData = new Promise(resolve => setTimeout(() => resolve ({
+    const getData = () => new Promise(resolve => setTimeout(() => resolve ({
       "companyName": "ABC Company",
       "name": "Tony",
       "email": "tony@gmail.com",
@@ -23,7 +27,7 @@ class FormContact extends Component {
       "budget": "not define",
       "about": "Contact",
     }), 500))
-    fData.then(
+    getData().then(
       results => {
         console.log(results)
         this.setState({
@@ -32,14 +36,17 @@ class FormContact extends Component {
       }
     )
   }
+
   componentDidMount() {
     this.fetchData();
   }
+
   handleselectedFile = e => {
     this.setState({
-      selectedFile: e.target.files[0],
+      selectedFile: Array.from(e.target.files)
     })
   }
+
   fileUploadHandle = () => {
     const fd = new FormData()
     fd.append('file', this.state.selectedFile, this.state.selectedFile.name);
@@ -52,9 +59,15 @@ class FormContact extends Component {
         console.log(res);
       });
   }
+
+  removeDiv = () => {
+    document.getElementById('upload').value = "";
+  }
+
   submit = values => {
     console.log(values)
   }
+
   validate = values => {
     const errors = {};
     if (!values.email) {
@@ -62,17 +75,20 @@ class FormContact extends Component {
     }
     return errors;
   }
+
+
+
   render() {
-    console.log(this.state.selectedFile)
+    console.log('field:', this.state.selectedFile)
     return(
-      <div className="container mx-auto mt-5 shadow-md p-5" style={{ maxWidth: 900 }}>
+      <div className="container mx-auto shadow-md p-5 md:p-10" style={{ maxWidth: 900 }}>
         <Form
           onSubmit={this.submit}
           validate={this.validate}
           initialValues={{...this.state.data}}
           onChange={this.handleChangeForm}
           render={ ({ handleSubmit, form , submitting}) => (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} encType="multipart/form-data">
               <FormSpy
                 subscription={{ submitSucceeded: true}}
                 onChange={state=>{
@@ -82,7 +98,7 @@ class FormContact extends Component {
                 }}
               />
               <div className="row md:flex">
-                <div className="col w-1/2 mx-2">
+                <div className="col w-full md:w-1/2 md:mr-2">
                   <Field name="companyName">
                     {({ input }) => (
                       <div className="mb-5">
@@ -101,7 +117,7 @@ class FormContact extends Component {
                     )}
                   </Field>
                 </div>
-                <div className="col w-1/2 mx-2">
+                <div className="col w-full md:w-1/2 md:ml-2">
                   <Field name="name">
                     {({ input }) => (
                       <div className="mb-5">
@@ -122,7 +138,7 @@ class FormContact extends Component {
                 </div>
               </div>
               <div className="row md:flex">
-                <div className="col w-1/2 mx-2">
+                <div className="col w-full md:w-1/2 md:mr-2">
                   <Field name="email">
                     {({ input, meta }) => (
                       <div className="mb-5">
@@ -143,7 +159,7 @@ class FormContact extends Component {
                     )}
                   </Field>
                 </div>
-                <div className="col w-1/2 mx-2">
+                <div className="col w-full md:w-1/2 md:ml-2">
                   <Field name="phone">
                     {({ input }) => (
                       <div className="mb-5">
@@ -164,7 +180,7 @@ class FormContact extends Component {
                 </div>
               </div>
               <div className="row md:flex">
-                <div className="col w-full mb-5 mx-2">
+                <div className="col w-full mb-5">
                   <label className="block mb-2">Which location is closest to you?</label>
                   <Field name="location">
                     {({ input }) => (
@@ -182,7 +198,7 @@ class FormContact extends Component {
                 </div>
               </div>
               <div className="row md:flex">
-                <div className="relative col w-full mb-5 mx-2">
+                <div className="relative col w-full mb-5">
                   <label className="block mb-2">What is your budget?</label>
                   <Field 
                     name="budget" 
@@ -203,7 +219,7 @@ class FormContact extends Component {
                 </div>
               </div>
               <div className="row md:flex">
-                <div className="relative col w-full mb-5 mx-2">
+                <div className="relative col w-full mb-5">
                   <label className="block mb-2">Tell us about your project</label>
                   <Field
                     name="about"
@@ -212,38 +228,54 @@ class FormContact extends Component {
                     rows={5}
                   >
                   </Field>
-
                   <label htmlFor="upload">
                     <SvgAttract 
-                      className="absolute pin-t pin-r mr-2" 
+                      className="absolute pin-r pin-t mr-2 cursor-pointer" 
                       style={{ top: `25%`, transform: `translateX(-25%)` }}
                     /> 
                   </label>
-                  <Field 
-                    name="upload_file"
-                    component="input"
-                    type="file"
-                    id="upload"
-                    className="hidden"
-                    onChange={this.handleselectedFile}
-                  >
+                  <Field name="upload_file">
+                    {({ input }) => (
+                      <input 
+                        {...input} 
+                        type="file"
+                        id="upload"
+                        className="hidden"
+                        multiple
+                        onChange={this.handleselectedFile}
+                      />
+                    )}
                   </Field>
                 </div>
               </div>
-              {/* <button onClick={this.fileUploadHandle} type="button">Upload</button> */}
-              <div 
-                className={`${(this.state.selectedFile != null ? 'row mx-2 bg-grey-lighter mb-5 p-5' : 'none')}`}
-              >
-                <ul className="list-reset">
-                  <li>
+              <ul className="list-reset mb-5">
+                {(this.state.selectedFile).map((file,index) => (
+                  <li 
+                    key={index}
+                    className="bg-grey-lighter my-1 py-2 px-4"
+                  >
                     <div className="flex items-center">
-                      <div className="flex-auto">{`${(this.state.selectedFile) != null ? this.state.selectedFile.name : '' }`}</div>
-                      <div className="flex-none">{`${(this.state.selectedFile) != null ? (this.state.selectedFile.size)/1000 + ' KB' : '' }`}</div>
+                      <div className="flex-auto">{file.name}</div>
+                      <div className="flex-none">{(file.size)/1000 + ' KB'}</div>
+                      <button
+                        type="button"
+                        className="text-red flex-none ml-5 focus:outline-none"
+                        onClick={() => {
+                          this.setState(state => {
+                            const removeItem = state.selectedFile.filter(e => e.name !== file.name)
+                            return {
+                              selectedFile: removeItem
+                            }
+                          })
+                        }}
+                      >
+                        x
+                      </button>
                     </div>
                   </li>
-                </ul>
-              </div>
-              <div className="row mx-2 flex justify-center item-center">
+                ))}
+              </ul>
+              <div className="row flex justify-center item-center">
                 <button 
                   type="submit" 
                   disabled={submitting} 
