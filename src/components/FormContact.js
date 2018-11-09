@@ -198,54 +198,60 @@ class FormContact extends Component {
                 </div>
               </div>
               <div className="row md:flex">
-                <div className="relative col w-full mb-5">
+                <div className="col w-full mb-5">
                   <label className="block mb-2">What is your budget?</label>
-                  <Field 
-                    name="budget" 
-                    component="select"
-                    className="cursor-pointer block w-full border border-solid h-12 bg-grey-lighter focus:outline-none px-4 py-3 appearance-none"
-                  >
-                    <option value="not define">Not define</option>
-                    <option value="up to $15,000">Up to $15,000</option>
-                    <option value="up to $30,000">Up to $30,000</option>
-                    <option value="up to $60,000">Up to $60,000</option>
-                    <option value="up to $100,000">Up to $100,000</option>
-                    <option value="more than $100,000">More than $100,000</option>
-                  </Field>
-                  <SvgDropdown 
-                    className="absolute pin-r" 
-                    style={{ top: `50%`, transform: `translateX(-50%)` }}
-                  />
+                  <div className="relative">
+                    <Field 
+                      name="budget" 
+                      component="select"
+                      className="
+                        cursor-pointer block w-full border border-solid h-12 
+                        bg-grey-lighter focus:outline-none 
+                        px-4 py-3 appearance-none"
+                    >
+                      <option value="not define">Not define</option>
+                      <option value="up to $15,000">Up to $15,000</option>
+                      <option value="up to $30,000">Up to $30,000</option>
+                      <option value="up to $60,000">Up to $60,000</option>
+                      <option value="up to $100,000">Up to $100,000</option>
+                      <option value="more than $100,000">More than $100,000</option>
+                    </Field>
+                    <SvgDropdown 
+                      className="absolute pin-r pin-t mr-2 pointer-events-none" 
+                      style={{ top: `50%`, transform: `translateY(-50%)` }}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="row md:flex">
-                <div className="relative col w-full mb-5">
+                <div className="col w-full mb-5">
                   <label className="block mb-2">Tell us about your project</label>
-                  <Field
-                    name="about"
-                    component="textarea"
-                    className="block border border-solid bg-grey-lighter w-full focus:outline-none px-4 py-3"
-                    rows={5}
-                  >
-                  </Field>
-                  <label htmlFor="upload">
-                    <SvgAttract 
-                      className="absolute pin-r pin-t mr-2 cursor-pointer" 
-                      style={{ top: `25%`, transform: `translateX(-25%)` }}
-                    /> 
-                  </label>
-                  <Field name="upload_file">
-                    {({ input }) => (
-                      <input 
-                        {...input} 
-                        type="file"
-                        id="upload"
-                        className="hidden"
-                        multiple
-                        onChange={this.handleselectedFile}
-                      />
-                    )}
-                  </Field>
+                  <div className="relative">
+                    <Field
+                      name="about"
+                      component="textarea"
+                      className="block border border-solid bg-grey-lighter w-full focus:outline-none px-4 py-3"
+                      rows={5}
+                    >
+                    </Field>
+                    <label htmlFor="upload">
+                      <SvgAttract 
+                        className="absolute pin-r pin-t m-2 cursor-pointer" 
+                      /> 
+                    </label>
+                    <Field name="upload_file">
+                      {({ input }) => (
+                        <input 
+                          {...input} 
+                          type="file"
+                          id="upload"
+                          className="hidden"
+                          multiple
+                          onChange={this.handleselectedFile}
+                        />
+                      )}
+                    </Field>
+                  </div>
                 </div>
               </div>
               <ul className="list-reset mb-5">
@@ -262,7 +268,7 @@ class FormContact extends Component {
                         className="text-red flex-none ml-5 focus:outline-none"
                         onClick={() => {
                           this.setState(state => {
-                            const removeItem = state.selectedFile.filter(e => e.name !== file.name)
+                            const removeItem = state.selectedFile.filter(e => e.lastModified !== file.lastModified)
                             return {
                               selectedFile: removeItem
                             }
